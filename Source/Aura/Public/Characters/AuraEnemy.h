@@ -16,8 +16,11 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IAuraTargetInterfa
 	GENERATED_BODY()
 
 public:
-	virtual void Tick(float DeltaSeconds) override;
+	AAuraEnemy();
+	virtual void BeginPlay() override;
 
+#pragma region TargetInterface
 	virtual void HightlightActor() override;
 	virtual void UnhighlightActor() override;
+#pragma endregion
 };
