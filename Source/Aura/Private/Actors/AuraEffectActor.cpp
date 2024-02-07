@@ -30,19 +30,15 @@ void AAuraEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 		return;
 	}
 	UAuraAttributeSet* mutableAuraAttributeSet = const_cast<UAuraAttributeSet*>(auraAttributeSet);
-	mutableAuraAttributeSet->SetHealth(95.f);
+	mutableAuraAttributeSet->SetHealth(auraAttributeSet->GetHealth() + 10.f);
+	mutableAuraAttributeSet->SetMana(auraAttributeSet->GetMana() - 10.f);
+	Destroy();
 }
 
 void AAuraEffectActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int OtherBodyIndex)
 {
-	const UAuraAttributeSet* auraAttributeSet = Cast<UAuraAttributeSet>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor)->GetAttributeSet(UAuraAttributeSet::StaticClass()));
-	if (!auraAttributeSet)
-	{
-		return;
-	}
-	UAuraAttributeSet* mutableAuraAttributeSet = const_cast<UAuraAttributeSet*>(auraAttributeSet);
-	mutableAuraAttributeSet->SetHealth(100.f);
+	
 }
 
 // Called when the game starts or when spawned
