@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Characters/AuraEnemy.h"
+#include "Player/States/AuraPlayerState.h"
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 
-void AAuraEnemy::Tick(float DeltaSeconds)
+AAuraPlayerState::AAuraPlayerState()
 {
-	Super::Tick(DeltaSeconds);
+	NetUpdateFrequency = 100.f;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -16,13 +16,7 @@ void AAuraEnemy::Tick(float DeltaSeconds)
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
-void AAuraEnemy::HightlightActor()
+UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 {
-	GetMesh()->SetRenderCustomDepth(true);
+	return AbilitySystemComponent;
 }
-
-void AAuraEnemy::UnhighlightActor()
-{
-	GetMesh()->SetRenderCustomDepth(false);
-}
-	
