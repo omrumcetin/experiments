@@ -13,41 +13,21 @@ AAuraEffectActor::AAuraEffectActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	SetRootComponent(StaticMeshComponent);
-	
-	SphereComponent = CreateDefaultSubobject<USphereComponent>("Sphere");
-	SphereComponent->SetupAttachment(GetRootComponent());
 }
 
-void AAuraEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AAuraEffectActor::ApplyGameplayEffectToTarget(AActor* InTargetActor, const TSubclassOf<UGameplayEffect> InGameplayEffectClass)
 {
-	const UAuraAttributeSet* auraAttributeSet = Cast<UAuraAttributeSet>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor)->GetAttributeSet(UAuraAttributeSet::StaticClass()));
-	if (!auraAttributeSet)
+	UAbilitySystemComponent* targetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InTargetActor);
+	if (!targetASC)
 	{
 		return;
 	}
-	UAuraAttributeSet* mutableAuraAttributeSet = const_cast<UAuraAttributeSet*>(auraAttributeSet);
-	mutableAuraAttributeSet->SetHealth(auraAttributeSet->GetHealth() + 10.f);
-	mutableAuraAttributeSet->SetMana(auraAttributeSet->GetMana() - 10.f);
-	Destroy();
-}
 
-void AAuraEffectActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int OtherBodyIndex)
-{
+	FGameplayEffectContextHandle effectContextHandle = targetASC->MakeEffectContext();
+	effectContextHandle.AddSourceObject(this);
 	
-}
-
-// Called when the game starts or when spawned
-void AAuraEffectActor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlap);
-	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnEndOverlap);
+	const FGameplayEffectSpecHandle effectSpecHandle = targetASC->MakeOutgoingSpec(InGameplayEffectClass, 1, effectContextHandle);
+	targetASC->ApplyGameplayEffectSpecToSelf(*effectSpecHandle.Data);
 }
 
 
