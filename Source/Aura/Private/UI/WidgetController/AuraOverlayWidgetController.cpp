@@ -19,28 +19,43 @@ void UAuraOverlayWidgetController::BindCallbacksToDependencies()
 {
 	const UAuraAttributeSet* auraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetHealthAttribute()).AddUObject(this, &ThisClass::HealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ThisClass::MaxHealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetManaAttribute()).AddUObject(this, &ThisClass::ManaChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetMaxManaAttribute()).AddUObject(this, &ThisClass::MaxManaChanged);
-}
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data) -> void
+		{
+			OnHealthChanged.Broadcast(Data.NewValue);
+		});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetMaxHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data) -> void
+		{
+			OnMaxHealthChanged.Broadcast(Data.NewValue);
+		});;
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetManaAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data) -> void
+		{
+			OnManaChanged.Broadcast(Data.NewValue);
+		});;
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetMaxManaAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data) -> void
+		{
+			OnMaxManaChanged.Broadcast(Data.NewValue);
+		});;
 
-void UAuraOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnHealthChanged.Broadcast(Data.NewValue);
-}
+	AbilitySystemComponent->OnGameplayEffectAppliedDelegateToSelf.AddLambda(
+		[this](UAbilitySystemComponent* InAsc,
+			const FGameplayEffectSpec& GameplayEffectSpec,
+			FActiveGameplayEffectHandle ActiveGameplayEffectHandle) -> void
+		{
+			FGameplayTagContainer tagContainer;
+			GameplayEffectSpec.GetAllAssetTags(tagContainer);
 
-void UAuraOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
-}
-
-void UAuraOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnManaChanged.Broadcast(Data.NewValue);
-}
-
-void UAuraOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxManaChanged.Broadcast(Data.NewValue);
+			for (const FGameplayTag& tag : tagContainer)
+			{
+				const FMessageContainerRow* row = GetDataTableRowByTag<FMessageContainerRow>(MessageContainerDataTable.Get(), tag );
+				if (row)
+				{
+					OnMessageNotify.Broadcast(*row);
+				}
+			}
+		}
+	);
 }
