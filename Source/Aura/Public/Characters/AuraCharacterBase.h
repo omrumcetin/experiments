@@ -5,13 +5,15 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "Interaction/AuraCombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
+class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAttributeSet;
 
 UCLASS(Abstract)
-class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface
+class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public IAuraCombatInterface
 {
 	GENERATED_BODY()
 
@@ -19,7 +21,7 @@ public:
 	// Sets default values for this character's properties
 	AAuraCharacterBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; } 
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,5 +34,17 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
-	TObjectPtr<UAttributeSet> AttributeSet; 
+	TObjectPtr<UAttributeSet> AttributeSet;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+
+	virtual void InitAbilityActorInfo() {}
+	void InitializePrimaryAttributes() const;
+	void InitializeSecondaryAttributes() const;
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const;
+	
 };

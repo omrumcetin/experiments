@@ -22,11 +22,13 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
+	virtual uint32 GetPlayerLevel() override;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = AuraCharacter)
 	TObjectPtr<USpringArmComponent> SpringArm;
 	UPROPERTY(EditDefaultsOnly, Category = AuraCharacter)
 	TObjectPtr<UCameraComponent> CameraComponent;
 	
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
 };

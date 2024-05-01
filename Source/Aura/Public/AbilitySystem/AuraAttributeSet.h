@@ -57,7 +57,7 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-	//-------------------- RPG ATTRIBUTES -----------------------------
+	//-------------------- PRIMARY ATTRIBUTES -----------------------------
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Attributes|Primary")
 	FGameplayAttributeData Strength;
@@ -86,6 +86,65 @@ public:
 
 	UFUNCTION()
 	void OnRep_Resilliance(const FGameplayAttributeData& OldResilliance) const;
+
+	//-------------------- SECONDARY ATTRIBUTES -----------------------
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Attributes|Primary")
+	FGameplayAttributeData Armor;
+	ATTRIBUTE_ACCESSORS(ThisClass, Armor);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Attributes|Primary")
+	FGameplayAttributeData ArmorPenetration;
+	ATTRIBUTE_ACCESSORS(ThisClass, ArmorPenetration);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "Attributes|Primary")
+	FGameplayAttributeData BlockChance;
+	ATTRIBUTE_ACCESSORS(ThisClass, BlockChance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitChance, Category = "Attributes|Primary")
+	FGameplayAttributeData CriticalHitChance;
+	ATTRIBUTE_ACCESSORS(ThisClass, CriticalHitChance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitDamage, Category = "Attributes|Primary")
+	FGameplayAttributeData CriticalHitDamage;
+	ATTRIBUTE_ACCESSORS(ThisClass, CriticalHitDamage);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitResistance, Category = "Attributes|Primary")
+	FGameplayAttributeData CriticalHitResistance;
+	ATTRIBUTE_ACCESSORS(ThisClass, CriticalHitResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegen, Category = "Attributes|Primary")
+	FGameplayAttributeData HealthRegen;
+	ATTRIBUTE_ACCESSORS(ThisClass, HealthRegen);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegen, Category = "Attributes|Primary")
+	FGameplayAttributeData ManaRegen;
+	ATTRIBUTE_ACCESSORS(ThisClass, ManaRegen);
+
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
+
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
+
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
+
+	UFUNCTION()
+	void OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const;
+
+	UFUNCTION()
+	void OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const;
+
+	UFUNCTION()
+	void OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const;
+
+	UFUNCTION()
+	void OnRep_HealthRegen(const FGameplayAttributeData& OldHealthRegen) const;
+	
+	UFUNCTION()
+	void OnRep_ManaRegen(const FGameplayAttributeData& OldManaRegen) const;
+	
 
 	//-------------------- VITAL ATTRIBUTES ---------------------------
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Attributes|Vital")

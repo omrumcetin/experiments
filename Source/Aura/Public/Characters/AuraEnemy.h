@@ -23,4 +23,9 @@ public:
 	virtual void HightlightActor() override;
 	virtual void UnhighlightActor() override;
 #pragma endregion
+
+	virtual uint32 GetPlayerLevel() override { return Level; }
+
+private:
+	uint32 Level{1};
 };

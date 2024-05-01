@@ -20,11 +20,23 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	/** Primary Attributes */
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Strength, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Intelligence, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Vigor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Resilliance, COND_None, REPNOTIFY_Always);
 
+	/** Secondary Attributes */
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, BlockChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, CriticalHitChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, CriticalHitDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, CriticalHitResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, HealthRegen, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ManaRegen, COND_None, REPNOTIFY_Always);
+	
+	/** Vital Attributes */
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Mana, COND_None, REPNOTIFY_Always);
@@ -61,22 +73,62 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 void UAuraAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Health, OldStrength);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Strength, OldStrength);
 }
 
 void UAuraAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Health, OldIntelligence);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Intelligence, OldIntelligence);
 }
 
 void UAuraAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Health, OldVigor);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Vigor, OldVigor);
 }
 
 void UAuraAttributeSet::OnRep_Resilliance(const FGameplayAttributeData& OldResilliance) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Health, OldResilliance);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Resilliance, OldResilliance);
+}
+
+void UAuraAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Armor, OldArmor);
+}
+
+void UAuraAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ArmorPenetration, OldArmorPenetration);
+}
+
+void UAuraAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, BlockChance, OldBlockChance);
+}
+
+void UAuraAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, CriticalHitChance, OldCriticalHitChance);
+}
+
+void UAuraAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, CriticalHitDamage, OldCriticalHitDamage);
+}
+
+void UAuraAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, CriticalHitResistance, OldCriticalHitResistance);
+}
+
+void UAuraAttributeSet::OnRep_HealthRegen(const FGameplayAttributeData& OldHealthRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, HealthRegen, OldHealthRegen);
+}
+
+void UAuraAttributeSet::OnRep_ManaRegen(const FGameplayAttributeData& OldManaRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ManaRegen, OldManaRegen);
 }
 
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
@@ -136,7 +188,4 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 		EffectProperties.TargetCharacter = Cast<ACharacter>(EffectProperties.TargetAvatarActor);
 		EffectProperties.TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(EffectProperties.TargetAvatarActor);
 	}
-	
-
-	
 }

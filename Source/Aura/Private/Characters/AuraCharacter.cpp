@@ -50,6 +50,12 @@ void AAuraCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+uint32 AAuraCharacter::GetPlayerLevel()
+{
+	AAuraPlayerState* ps = GetPlayerState<AAuraPlayerState>();
+	return ps->GetPlayerLevel();
+}
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* ps = GetPlayerState<AAuraPlayerState>();
@@ -65,4 +71,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 			hud->InitOverlay(pc, ps, AbilitySystemComponent, AttributeSet);
 		}
 	}
+
+	InitializePrimaryAttributes();
+	InitializeSecondaryAttributes();
 }
