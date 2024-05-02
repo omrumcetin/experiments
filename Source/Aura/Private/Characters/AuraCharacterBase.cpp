@@ -26,12 +26,17 @@ void AAuraCharacterBase::BeginPlay()
 
 void AAuraCharacterBase::InitializePrimaryAttributes() const
 {
-	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
+	ApplyEffectToSelf(DefaultPrimaryAttributesEffectClass, 1.f);
 }
 
 void AAuraCharacterBase::InitializeSecondaryAttributes() const
 {
-	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
+	ApplyEffectToSelf(DefaultSecondaryAttributesEffectClass, 1.f);
+}
+
+void AAuraCharacterBase::InitializeVitalAttributes() const
+{
+	ApplyEffectToSelf(DefaultVitalAttributesEffectClass, 1.f);
 }
 
 void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const

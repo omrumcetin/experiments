@@ -37,14 +37,18 @@ protected:
 	TObjectPtr<UAttributeSet> AttributeSet;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributesEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributesEffectClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributesEffectClass;
 
 	virtual void InitAbilityActorInfo() {}
 	void InitializePrimaryAttributes() const;
 	void InitializeSecondaryAttributes() const;
+	void InitializeVitalAttributes() const;
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const;
 	
 };
