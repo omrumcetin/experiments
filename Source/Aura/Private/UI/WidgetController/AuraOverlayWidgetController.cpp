@@ -28,17 +28,17 @@ void UAuraOverlayWidgetController::BindCallbacksToDependencies()
 		[this](const FOnAttributeChangeData& Data) -> void
 		{
 			OnMaxHealthChanged.Broadcast(Data.NewValue);
-		});;
+		});
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetManaAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) -> void
 		{
 			OnManaChanged.Broadcast(Data.NewValue);
-		});;
+		});
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetMaxManaAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) -> void
 		{
 			OnMaxManaChanged.Broadcast(Data.NewValue);
-		});;
+		});
 
 	AbilitySystemComponent->OnGameplayEffectAppliedDelegateToSelf.AddLambda(
 		[this](UAbilitySystemComponent* InAsc,

@@ -50,5 +50,4 @@ protected:
 	void InitializeSecondaryAttributes() const;
 	void InitializeVitalAttributes() const;
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const;
-	
 };
