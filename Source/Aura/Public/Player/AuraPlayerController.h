@@ -6,10 +6,13 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class UAuraAbilitySystemComponent;
+class UAuraInputConfig;
 class IAuraTargetInterface;
-struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
+struct FInputActionValue;
+struct FGameplayTag;
 /**
  * 
  */
@@ -30,12 +33,27 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<UInputMappingContext> AuraContext;
-
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UAuraInputConfig* InputConfig;
+	
+	UPROPERTY()
+	UAuraAbilitySystemComponent* AuraAbilitySystemComponent;
+
+	UFUNCTION()
+	void AbilityInputPressed(FGameplayTag InputTag);
+
+	UFUNCTION()
+	void AbilityInputHeld(FGameplayTag InputTag);
+
+	UFUNCTION()
+	void AbilityInputReleased(FGameplayTag InputTag);
 
 	void Move(const FInputActionValue& InputActionValue);
 	void CursorTrace();
+
+	UAuraAbilitySystemComponent* GetASC();
 
 	IAuraTargetInterface* LastActor;
 	IAuraTargetInterface* CurrentActor;

@@ -3,8 +3,10 @@
 
 #include "Characters/AuraCharacterBase.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
@@ -22,6 +24,14 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 void AAuraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AAuraCharacterBase::GiveAbilitiesToCharacter()
+{
+	if (!HasAuthority()) return;
+	
+	UAuraAbilitySystemComponent* auraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	auraASC->AddCharacterAbilities(StartupAbilities);
 }
 
 void AAuraCharacterBase::InitializePrimaryAttributes() const

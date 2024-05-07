@@ -35,6 +35,15 @@ struct FAuraGameplayTags
 	FGameplayTag AttributesVitalMaxHealth;
 	FGameplayTag AttributesVitalMana;
 	FGameplayTag AttributesVitalMaxMana;
+
+	/** Inputs */
+	FGameplayTag InputTagRightMouseButton;
+	FGameplayTag InputTagLeftMouseButton;
+	FGameplayTag InputTagAction1;
+	FGameplayTag InputTagAction2;
+	FGameplayTag InputTagAction3;
+	FGameplayTag InputTagAction4;
+	
 	
 	/** Message */
 	FGameplayTag MessageHealthPotion;

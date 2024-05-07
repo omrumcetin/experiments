@@ -33,6 +33,14 @@ void FAuraGameplayTags::AddAllTags()
 	AddTag(AttributesVitalMana, "Attributes.Vital.Mana", "Current mana of character");
 	AddTag(AttributesVitalMaxMana, "Attributes.Vital.MaxMana", "Maximum amount of mana that character can have");
 
+	AddTag(InputTagRightMouseButton, "InputTag.RightMouseButton", "RightMouseButton");
+	AddTag(InputTagLeftMouseButton, "InputTag.LeftMouseButton", "LeftMouseButton");
+	AddTag(InputTagAction1, "InputTag.Action1", "First action input");
+	AddTag(InputTagAction2, "InputTag.Action2", "Second action input");
+	AddTag(InputTagAction3, "InputTag.Action3", "Third action input");
+	AddTag(InputTagAction4, "InputTag.Action4", "Forth action input");
+	
+
 	AddTag(MessageHealthPotion,  "Message.Health.Potion", "Message tag for Health Potion");
 	AddTag(MessageHealthCrystal, "Message.Health.Crystal", "Message tag for Health Crystal");
 	AddTag(MessageManaPotion,	"Message.Mana.Potion", "Message tag for Mana Potion");
