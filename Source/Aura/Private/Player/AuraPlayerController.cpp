@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Core/AuraGameplayTags.h"
 #include "Input/AuraEnhancedInputComponent.h"
 #include "Interaction/AuraTargetInterface.h"
 
@@ -57,16 +58,49 @@ void AAuraPlayerController::SetupInputComponent()
 
 void AAuraPlayerController::AbilityInputPressed(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.f, FColor::Yellow, FString::Printf(TEXT("Ability input pressed - %s"),*InputTag.ToString()));
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTagLeftMouseButton))
+	{
+		bTargeting = CurrentActor ? true : false;
+		bAutoRun = false;
+	}
 }
 
 void AAuraPlayerController::AbilityInputHeld(FGameplayTag InputTag)
 {
-	if (!GetASC())
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTagLeftMouseButton))
 	{
+		if (!GetASC())
+		{
+			return;
+		}
+		GetASC()->AbilityInputTagHeld(InputTag);
 		return;
 	}
-	GetASC()->AbilityInputTagHeld(InputTag);
+
+	// If any target on the mouse click use ability!!
+	if (bTargeting)
+	{
+		if (!GetASC())
+		{
+			return;
+		}
+		GetASC()->AbilityInputTagHeld(InputTag);
+	}
+	else
+	{
+		FollowTime += GetWorld()->GetDeltaSeconds();
+		FHitResult hitResult;
+		if (GetHitResultUnderCursor(ECC_Visibility, false, hitResult))
+		{
+			CachedDestination = hitResult.ImpactPoint;
+		}
+
+		if (APawn* controlledPawn = GetPawn())
+		{
+			const FVector WorldDirection = (CachedDestination - controlledPawn->GetActorLocation()).GetSafeNormal();
+			controlledPawn->AddMovementInput(WorldDirection);
+		}
+	}
 }
 
 void AAuraPlayerController::AbilityInputReleased(FGameplayTag InputTag)
@@ -77,8 +111,6 @@ void AAuraPlayerController::AbilityInputReleased(FGameplayTag InputTag)
 	}
 	GetASC()->AbilityInputTagReleased(InputTag);
 }
-
-
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
