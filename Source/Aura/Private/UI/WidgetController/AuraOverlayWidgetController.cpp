@@ -3,7 +3,9 @@
 
 #include "UI/WidgetController/AuraOverlayWidgetController.h"
 
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Core/AuraGameplayTags.h"
 
 void UAuraOverlayWidgetController::BroadcastInitialValues()
 {
@@ -17,39 +19,39 @@ void UAuraOverlayWidgetController::BroadcastInitialValues()
 
 void UAuraOverlayWidgetController::BindCallbacksToDependencies()
 {
-	const UAuraAttributeSet* auraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
+	const UAuraAttributeSet* auraAS = CastChecked<UAuraAttributeSet>(AttributeSet);
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetHealthAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAS->GetHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) -> void
 		{
 			OnHealthChanged.Broadcast(Data.NewValue);
 		});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetMaxHealthAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAS->GetMaxHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) -> void
 		{
 			OnMaxHealthChanged.Broadcast(Data.NewValue);
 		});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetManaAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAS->GetManaAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) -> void
 		{
 			OnManaChanged.Broadcast(Data.NewValue);
 		});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAttributeSet->GetMaxManaAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(auraAS->GetMaxManaAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data) -> void
 		{
 			OnMaxManaChanged.Broadcast(Data.NewValue);
 		});
-
-	AbilitySystemComponent->OnGameplayEffectAppliedDelegateToSelf.AddLambda(
-		[this](UAbilitySystemComponent* InAsc,
-			const FGameplayEffectSpec& GameplayEffectSpec,
-			FActiveGameplayEffectHandle ActiveGameplayEffectHandle) -> void
+	
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->OnEffectAssetTagsDelegate.AddLambda(
+		[this](const FGameplayTagContainer& Container) -> void
 		{
-			FGameplayTagContainer tagContainer;
-			GameplayEffectSpec.GetAllAssetTags(tagContainer);
-
-			for (const FGameplayTag& tag : tagContainer)
+			for (const FGameplayTag& tag : Container)
 			{
+				FGameplayTag messageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
+				if (!tag.MatchesTag(messageTag))
+				{
+					return;
+				}
 				const FMessageContainerRow* row = GetDataTableRowByTag<FMessageContainerRow>(MessageContainerDataTable.Get(), tag );
 				if (row)
 				{

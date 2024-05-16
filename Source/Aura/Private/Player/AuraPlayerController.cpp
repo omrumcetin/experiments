@@ -5,7 +5,10 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Components/SplineComponent.h"
 #include "Core/AuraGameplayTags.h"
 #include "Input/AuraEnhancedInputComponent.h"
 #include "Interaction/AuraTargetInterface.h"
@@ -15,6 +18,8 @@ class UEnhancedInputLocalPlayerSubsystem;
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+
+	MovementSpline = CreateDefaultSubobject<USplineComponent>("MovementSpline");
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaSeconds)
@@ -22,6 +27,7 @@ void AAuraPlayerController::PlayerTick(float DeltaSeconds)
 	Super::PlayerTick(DeltaSeconds);
 
 	CursorTrace();
+	AutoRun();
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -52,7 +58,6 @@ void AAuraPlayerController::SetupInputComponent()
 
 	UAuraEnhancedInputComponent* enhancedInputComponent = CastChecked<UAuraEnhancedInputComponent>(InputComponent);
 	enhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
-
 	enhancedInputComponent->BindAbilityInputActions(InputConfig, this, &ThisClass::AbilityInputPressed, &ThisClass::AbilityInputHeld, &ThisClass::AbilityInputReleased);
 }
 
@@ -67,7 +72,7 @@ void AAuraPlayerController::AbilityInputPressed(FGameplayTag InputTag)
 
 void AAuraPlayerController::AbilityInputHeld(FGameplayTag InputTag)
 {
-	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTagLeftMouseButton))
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTagLeftMouseButton) || bTargeting)
 	{
 		if (!GetASC())
 		{
@@ -76,40 +81,54 @@ void AAuraPlayerController::AbilityInputHeld(FGameplayTag InputTag)
 		GetASC()->AbilityInputTagHeld(InputTag);
 		return;
 	}
-
-	// If any target on the mouse click use ability!!
-	if (bTargeting)
+	
+	FollowTime += GetWorld()->GetDeltaSeconds();
+	if (CursorHit.bBlockingHit)
 	{
-		if (!GetASC())
-		{
-			return;
-		}
-		GetASC()->AbilityInputTagHeld(InputTag);
+		CachedDestination = CursorHit.ImpactPoint;
 	}
-	else
-	{
-		FollowTime += GetWorld()->GetDeltaSeconds();
-		FHitResult hitResult;
-		if (GetHitResultUnderCursor(ECC_Visibility, false, hitResult))
-		{
-			CachedDestination = hitResult.ImpactPoint;
-		}
 
-		if (APawn* controlledPawn = GetPawn())
-		{
-			const FVector WorldDirection = (CachedDestination - controlledPawn->GetActorLocation()).GetSafeNormal();
-			controlledPawn->AddMovementInput(WorldDirection);
-		}
+	if (APawn* controlledPawn = GetPawn())
+	{
+		const FVector WorldDirection = (CachedDestination - controlledPawn->GetActorLocation()).GetSafeNormal();
+		controlledPawn->AddMovementInput(WorldDirection);
 	}
+
 }
 
 void AAuraPlayerController::AbilityInputReleased(FGameplayTag InputTag)
 {
-	if (!GetASC())
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTagLeftMouseButton) || bTargeting)
 	{
+		if (!GetASC())
+		{
+			return;
+		}
+		GetASC()->AbilityInputTagReleased(InputTag);
 		return;
 	}
-	GetASC()->AbilityInputTagReleased(InputTag);
+
+	APawn* controlledPawn = GetPawn();
+	if (controlledPawn && FollowTime < ShortPressThreshold)
+	{
+		if (UNavigationPath* navPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, controlledPawn->GetActorLocation(), CachedDestination))
+		{
+			MovementSpline->ClearSplinePoints();
+			for (const FVector& pointLoc : navPath->PathPoints)
+			{
+				MovementSpline->AddSplinePoint(pointLoc, ESplineCoordinateSpace::World);
+				DrawDebugSphere(GetWorld(), pointLoc, 16.f, 16, FColor::Green, false, 5.f);
+			}
+			if (navPath->PathPoints.IsEmpty())
+			{
+				return;
+			}
+			CachedDestination = navPath->PathPoints[navPath->PathPoints.Num() - 1];
+			bAutoRun = true;
+		}		
+	}
+	FollowTime = 0;
+	bTargeting = false;
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -130,48 +149,25 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AAuraPlayerController::CursorTrace()
 {
-	FHitResult cursorHit;
-	GetHitResultUnderCursor(ECC_Pawn, false, cursorHit);
-	if (!cursorHit.bBlockingHit)
+
+	GetHitResultUnderCursor(ECC_Pawn, false, CursorHit);
+	if (!CursorHit.bBlockingHit)
 	{
 		return;
 	}
 
 	LastActor = CurrentActor;
-	CurrentActor = Cast<IAuraTargetInterface>(cursorHit.GetActor());
+	CurrentActor = Cast<IAuraTargetInterface>(CursorHit.GetActor());
 
-	/**
-	 * Line trace from cursor and there is possible scenarios.
-	 * A. LastActor is null and CurrentActor is null
-	 * - Do nothing.
-	 * B. LastActor is valid and CurrentActor is null
-	 * - Unhighlight LastActor.
-	 * C. LastActor is null and CurrentActor is valid
-	 * - Highlight CurrentActor
-	 * D. LastActor is valid and CurrentActor is valid
-	 * - Unhighlight LastActor, Hightlight CurrentActor
-	 */
-
-	if (!LastActor)
+	if (LastActor != CurrentActor)
 	{
+		if (LastActor)
+		{
+			LastActor->UnhighlightActor();
+		}
 		if (CurrentActor)
 		{
 			CurrentActor->HightlightActor();
-		}
-	}
-	else
-	{
-		if (CurrentActor)
-		{
-			if (CurrentActor != LastActor)
-			{
-				LastActor->UnhighlightActor();
-				CurrentActor->HightlightActor();
-			}
-		}
-		else
-		{
-			LastActor->UnhighlightActor();
 		}
 	}
 }
@@ -183,4 +179,25 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn()));
 	}
 	return AuraAbilitySystemComponent;
+}
+
+void AAuraPlayerController::AutoRun()
+{
+	if (!bAutoRun)
+	{
+		return;
+	}
+
+	if (APawn* controlledPawn = GetPawn())
+	{
+		const FVector locationOnSpline = MovementSpline->FindLocationClosestToWorldLocation(controlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		const FVector direction = MovementSpline->FindDirectionClosestToWorldLocation(locationOnSpline, ESplineCoordinateSpace::World);
+		controlledPawn->AddMovementInput(direction);
+
+		const float distanceToDestination = (locationOnSpline - CachedDestination).Length();
+		if (distanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			bAutoRun = false;
+		}
+	}
 }

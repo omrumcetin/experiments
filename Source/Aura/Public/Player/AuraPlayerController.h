@@ -58,13 +58,17 @@ private:
 
 	IAuraTargetInterface* LastActor;
 	IAuraTargetInterface* CurrentActor;
+	FHitResult CursorHit;
 
 	FVector CachedDestination = FVector::ZeroVector;
 	float FollowTime{0.f};
+	float ShortPressThreshold{0.5f};
 	uint32 bAutoRun : 1 {false};
 	uint32 bTargeting : 1 {false};
 
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius{50.f};
 	TObjectPtr<USplineComponent> MovementSpline;
+
+	void AutoRun();
 };

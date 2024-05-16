@@ -22,7 +22,7 @@ public:
 	AAuraPlayerState();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	FORCEINLINE UAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	FORCEINLINE virtual uint32 GetPlayerLevel() override { return Level; }
+	FORCEINLINE virtual int32 GetPlayerLevel() override { return Level; }
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 protected:

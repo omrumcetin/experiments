@@ -23,6 +23,7 @@ public:
 	AAuraCharacterBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	virtual FVector GetCombatSocketLocation() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,6 +31,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category=Combat)
 	TObjectPtr<USkeletalMeshComponent> Weapon;
+
+	UPROPERTY(EditDefaultsOnly, Category=Combat)
+	FName TipOfWeapon;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -51,9 +55,6 @@ protected:
 
 	virtual void InitAbilityActorInfo() {}
 	void GiveAbilitiesToCharacter();
-	void InitializePrimaryAttributes() const;
-	void InitializeSecondaryAttributes() const;
-	void InitializeVitalAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const;
-	UAbilitySystemComponent* GetAbilitySystemComponent();
 };

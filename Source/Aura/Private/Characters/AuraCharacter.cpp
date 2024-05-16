@@ -4,6 +4,7 @@
 #include "Characters/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -51,7 +52,7 @@ void AAuraCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
-uint32 AAuraCharacter::GetPlayerLevel()
+int32 AAuraCharacter::GetPlayerLevel()
 {
 	AAuraPlayerState* ps = GetPlayerState<AAuraPlayerState>();
 	return ps->GetPlayerLevel();
@@ -62,6 +63,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AAuraPlayerState* ps = GetPlayerState<AAuraPlayerState>();
 	check(ps);
 	ps->GetAbilitySystemComponent()->InitAbilityActorInfo(ps, this);
+	Cast<UAuraAbilitySystemComponent>(ps->GetAbilitySystemComponent())->PostAbilityActorInfoSet();
 	AbilitySystemComponent = ps->GetAbilitySystemComponent();
 	AttributeSet = ps->GetAttributeSet();
 
@@ -73,7 +75,5 @@ void AAuraCharacter::InitAbilityActorInfo()
 		}
 	}
 
-	InitializePrimaryAttributes();
-	InitializeSecondaryAttributes();
-	InitializeVitalAttributes();
+	InitializeDefaultAttributes();
 }

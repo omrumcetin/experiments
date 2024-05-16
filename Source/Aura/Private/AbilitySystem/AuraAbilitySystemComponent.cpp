@@ -5,24 +5,16 @@
 
 #include "AbilitySystem/AuraGameplayAbility.h"
 
-void UAuraAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
-{
-	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
-
-	PostAbilityActorInfoSet();
-}
-
 void UAuraAbilitySystemComponent::PostAbilityActorInfoSet()
 {
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::EffectApplied);
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::ClientEffectApplied);
 }
 
-void UAuraAbilitySystemComponent::EffectApplied(
-	UAbilitySystemComponent* AbilitySystemComponent,
-	const FGameplayEffectSpec& GameplayEffectSpec,
-	FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
+void UAuraAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {
-	
+	FGameplayTagContainer tagContainer;
+	GameplayEffectSpec.GetAllAssetTags(tagContainer);
+	OnEffectAssetTagsDelegate.Broadcast(tagContainer);
 }
 
 void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)

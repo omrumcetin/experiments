@@ -27,11 +27,11 @@ void FAuraGameplayTags::AddAllTags()
 	AddTag(AttributesSecondaryBlockChance, "Attributes.Secondary.BlockChance", "Increases blocking chance");
 	AddTag(AttributesSecondaryRegenHealth, "Attributes.Secondary.Regen.Health", "Regen amount of health in 1s");
 	AddTag(AttributesSecondaryRegenMana, "Attributes.Secondary.Regen.Mana", "Regen amount of mana in 1s");
+	AddTag(AttributesSecondaryMaxHealth, "Attributes.Secondary.MaxHealth", "Maximum amount of health that character can have");
+	AddTag(AttributesSecondaryMaxMana, "Attributes.Secondary.MaxMana", "Maximum amount of mana that character can have");
 
 	AddTag(AttributesVitalHealth, "Attributes.Vital.Health", "Health of character");
-	AddTag(AttributesVitalMaxHealth, "Attributes.Vital.MaxHealth", "Maximum amount of health that character can have");
 	AddTag(AttributesVitalMana, "Attributes.Vital.Mana", "Current mana of character");
-	AddTag(AttributesVitalMaxMana, "Attributes.Vital.MaxMana", "Maximum amount of mana that character can have");
 
 	AddTag(InputTagRightMouseButton, "InputTag.RightMouseButton", "RightMouseButton");
 	AddTag(InputTagLeftMouseButton, "InputTag.LeftMouseButton", "LeftMouseButton");

@@ -22,7 +22,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	virtual uint32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = AuraCharacter)

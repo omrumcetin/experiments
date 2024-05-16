@@ -3,10 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Characters/AuraCharacterBase.h"
 #include "Interaction/AuraTargetInterface.h"
+#include "UI/WidgetController/AuraOverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+enum class ECharacterClass : uint8;
+class UAuraEnemyWidgetController;
+class UAuraWidgetController;
+class UAuraUserWidget;
+class UWidgetComponent;
 /**
  * 
  */
@@ -18,14 +25,28 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IAuraTargetInterfa
 public:
 	AAuraEnemy();
 	virtual void BeginPlay() override;
+	virtual void InitAbilityActorInfo() override;
+	virtual void InitializeDefaultAttributes() const override;
 
 #pragma region TargetInterface
 	virtual void HightlightActor() override;
 	virtual void UnhighlightActor() override;
 #pragma endregion
 
-	virtual uint32 GetPlayerLevel() override { return Level; }
+	virtual int32 GetPlayerLevel() override { return Level; }
 
-private:
-	uint32 Level{1};
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+protected:	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> OverheadWidgetComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level{1};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	ECharacterClass CharacterClass{ECharacterClass::Melee};
 };

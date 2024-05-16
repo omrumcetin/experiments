@@ -29,12 +29,12 @@ struct FAuraGameplayTags
 	FGameplayTag AttributesSecondaryBlockChance;
 	FGameplayTag AttributesSecondaryRegenHealth;
 	FGameplayTag AttributesSecondaryRegenMana;
+	FGameplayTag AttributesSecondaryMaxHealth;
+	FGameplayTag AttributesSecondaryMaxMana;
 	
 	/**** Vital */
 	FGameplayTag AttributesVitalHealth;
-	FGameplayTag AttributesVitalMaxHealth;
 	FGameplayTag AttributesVitalMana;
-	FGameplayTag AttributesVitalMaxMana;
 
 	/** Inputs */
 	FGameplayTag InputTagRightMouseButton;

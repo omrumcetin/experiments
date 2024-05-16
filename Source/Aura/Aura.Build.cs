@@ -22,8 +22,9 @@ public class Aura : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"GameplayTasks",
-			"GameplayTags"
-			
+			"GameplayTags",
+			"NavigationSystem",
+			"Niagara"
 		});
 
 		PublicIncludePaths.AddRange(new string[]
