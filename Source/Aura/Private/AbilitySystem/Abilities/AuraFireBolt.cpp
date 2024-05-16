@@ -3,8 +3,10 @@
 
 #include "AbilitySystem/Abilities/AuraFireBolt.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Actors/AuraProjectile.h"
+#include "Core/AuraGameplayTags.h"
 #include "Interaction/AuraCombatInterface.h"
 
 void UAuraFireBolt::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -43,6 +45,7 @@ void UAuraFireBolt::SpawnProjectile(const FVector& ProjectileTargetLocation)
 		const UAbilitySystemComponent* sourceASC = GetAbilitySystemComponentFromActorInfo();
 		check(DamageEffectClass);
 		const FGameplayEffectSpecHandle damageSpec = sourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), sourceASC->MakeEffectContext());
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(damageSpec, FAuraGameplayTags::Get().DataDamage, Damage.GetValueAtLevel(GetAbilityLevel()));
 		projectile->DamageEffectSpecHandle = damageSpec;
 
 		projectile->FinishSpawning(spawnTransform);

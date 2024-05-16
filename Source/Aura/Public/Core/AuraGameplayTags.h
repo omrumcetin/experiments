@@ -43,6 +43,12 @@ struct FAuraGameplayTags
 	FGameplayTag InputTagAction2;
 	FGameplayTag InputTagAction3;
 	FGameplayTag InputTagAction4;
+
+	/** Data */
+	FGameplayTag DataDamage;
+
+	/** Effects */
+	FGameplayTag EffectHitReact;
 	
 	
 	/** Message */

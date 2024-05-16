@@ -23,5 +23,7 @@ public:
 	static UAuraOverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetController")
 	static UAuraAttributeMenuWController* GetAttributeWidgetController(const UObject* WorldContextObject);
+	
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 Level, UAbilitySystemComponent* ASC);
+	static void InitializeDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC);
 };

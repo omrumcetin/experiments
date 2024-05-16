@@ -173,6 +173,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Attribute|Vital")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(ThisClass, Mana);
+
+	//-------------------- META ATTRIBUTES ----------------------------
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes|Meta")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(ThisClass, IncomingDamage);
 	
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;

@@ -9,6 +9,8 @@
 #include "UI/Widgets/AuraUserWidget.h"
 #include "GameplayEffectTypes.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Core/AuraGameplayTags.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
@@ -30,6 +32,8 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAbilityActorInfo();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	UAuraAbilitySystemLibrary::InitializeDefaultAbilities(this, AbilitySystemComponent);
 	
 	if (UAuraUserWidget* auraWidget = Cast<UAuraUserWidget>(OverheadWidgetComponent->GetUserWidgetObject()))
 	{
@@ -51,6 +55,20 @@ void AAuraEnemy::BeginPlay()
 				UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Why FOnAttributeChangeData is null for %s: %f, %f"), *Data.Attribute.AttributeName, Data.NewValue, Data.OldValue), true, true, FLinearColor::Red, 4);
 			}
 		);
+
+		AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().EffectHitReact, EGameplayTagEventType::NewOrRemoved).AddLambda(
+			[this](const FGameplayTag Tag, int32 NewCount)
+			{
+				if (NewCount > 0)
+				{
+					GetCharacterMovement()->MaxWalkSpeed = 0.f;
+				}
+				else
+				{
+					GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+				}
+				
+			});
 
 		OnHealthChanged.Broadcast(auraAS->GetHealth());
 		OnMaxHealthChanged.Broadcast(auraAS->GetMaxHealth());

@@ -17,5 +17,7 @@ class AURA_API UAuraGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	FGameplayTag StartupTag;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category =  "Damage")
+	FScalableFloat Damage;
 };

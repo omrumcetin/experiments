@@ -39,6 +39,10 @@ void FAuraGameplayTags::AddAllTags()
 	AddTag(InputTagAction2, "InputTag.Action2", "Second action input");
 	AddTag(InputTagAction3, "InputTag.Action3", "Third action input");
 	AddTag(InputTagAction4, "InputTag.Action4", "Forth action input");
+
+	AddTag(DataDamage, "Data.Damage", "DamageData");
+	
+	AddTag(EffectHitReact, "Effect.HitReact", "React on hit");
 	
 
 	AddTag(MessageHealthPotion,  "Message.Health.Potion", "Message tag for Health Potion");

@@ -34,6 +34,12 @@ FVector AAuraCharacterBase::GetCombatSocketLocation()
 
 	return Weapon->GetSocketLocation(TipOfWeapon);
 }
+
+UAnimMontage* AAuraCharacterBase::GetHitReactAnim_Implementation()
+{
+	return HitReactAnimMontage;
+}
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {

@@ -25,6 +25,7 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	virtual FVector GetCombatSocketLocation() override;
 
+	virtual UAnimMontage* GetHitReactAnim_Implementation() override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,4 +58,7 @@ protected:
 	void GiveAbilitiesToCharacter();
 	virtual void InitializeDefaultAttributes() const;
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> HitReactAnimMontage;
 };

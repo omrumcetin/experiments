@@ -49,4 +49,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass{ECharacterClass::Melee};
+
+	UPROPERTY()
+	float BaseWalkSpeed{100.f};
 };
