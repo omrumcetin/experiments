@@ -7,6 +7,7 @@
 #include "Core/AuraGameplayTags.h"
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
+#include "Interaction/AuraCombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -106,6 +107,14 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			FGameplayTagContainer tagContainer;
 			tagContainer.AddTag(FAuraGameplayTags::Get().EffectHitReact);
 			properties.TargetASC->TryActivateAbilitiesByTag(tagContainer);
+		}
+		else
+		{
+			IAuraCombatInterface* combatInterface = Cast<IAuraCombatInterface>(properties.TargetAvatarActor);
+			if (combatInterface)
+			{
+				combatInterface->Die();
+			}
 		}
 	}
 }

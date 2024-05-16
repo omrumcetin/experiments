@@ -31,5 +31,7 @@ public:
 	void SetFacingTarget(const FVector& TargetLocation);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	UAnimMontage* GetHitReactAnim(); 
+	UAnimMontage* GetHitReactAnim();
+
+	virtual void Die() = 0;
 };

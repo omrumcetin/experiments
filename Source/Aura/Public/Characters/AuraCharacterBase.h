@@ -26,6 +26,11 @@ public:
 	virtual FVector GetCombatSocketLocation() override;
 
 	virtual UAnimMontage* GetHitReactAnim_Implementation() override;
+
+	virtual void Die() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastHandleDeath();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

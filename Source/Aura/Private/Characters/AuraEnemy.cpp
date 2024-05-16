@@ -12,6 +12,7 @@
 #include "Core/AuraGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Logging/StructuredLog.h"
 
 
 AAuraEnemy::AAuraEnemy()
@@ -52,7 +53,7 @@ void AAuraEnemy::BeginPlay()
 			[this, auraAS](const FOnAttributeChangeData& Data)
 			{
 				OnMaxHealthChanged.Broadcast(auraAS->GetMaxHealth());
-				UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Why FOnAttributeChangeData is null for %s: %f, %f"), *Data.Attribute.AttributeName, Data.NewValue, Data.OldValue), true, true, FLinearColor::Red, 4);
+				UE_LOGFMT(LogTemp, Verbose, "FOnAttributeData streaming OldValue({OldValue}), NewValue({NewValue})", Data.OldValue, Data.NewValue);
 			}
 		);
 
