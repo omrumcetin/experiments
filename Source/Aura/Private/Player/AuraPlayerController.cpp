@@ -12,6 +12,7 @@
 #include "Core/AuraGameplayTags.h"
 #include "Input/AuraEnhancedInputComponent.h"
 #include "Interaction/AuraTargetInterface.h"
+#include "UI/Components/DamageTextComponent.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
 
@@ -28,6 +29,18 @@ void AAuraPlayerController::PlayerTick(float DeltaSeconds)
 
 	CursorTrace();
 	AutoRun();
+}
+
+void AAuraPlayerController::ClientShowDamageText_Implementation(AActor* DamagedActor, float Damage, bool bIsCriticalDamage, bool bIsBlockingHit)
+{
+	if (IsValid(DamagedActor) && DamageTextComponentClass)
+	{
+		UDamageTextComponent* damageTextComponent = NewObject<UDamageTextComponent>(DamagedActor, DamageTextComponentClass);
+		damageTextComponent->RegisterComponent();
+		damageTextComponent->AttachToComponent(DamagedActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		damageTextComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		damageTextComponent->SetDamageText(Damage, bIsCriticalDamage, bIsBlockingHit);
+	}
 }
 
 void AAuraPlayerController::BeginPlay()

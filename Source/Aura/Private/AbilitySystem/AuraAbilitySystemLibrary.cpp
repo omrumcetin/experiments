@@ -4,6 +4,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "Core/AuraGameplayEffectTypes.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/States/AuraPlayerState.h"
@@ -72,4 +73,36 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAbilities(const UObject* WorldC
 		FGameplayAbilitySpec abilitySpec {gameplayAbility, 1};
 		ASC->GiveAbility(abilitySpec);
 	}
+}
+
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	AAuraGameModeBase* gameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (!gameModeBase) return nullptr;
+
+	return gameModeBase->CharacterClassInfo;
+}
+
+bool UAuraAbilitySystemLibrary::IsBlockingHit(FGameplayEffectContextHandle& ContextHandle)
+{
+	FAuraGameplayEffectContext* auraContext = static_cast<FAuraGameplayEffectContext*>(ContextHandle.Get());
+	return auraContext->IsBlockingHit();
+}
+
+bool UAuraAbilitySystemLibrary::IsCriticalHit(FGameplayEffectContextHandle& ContextHandle)
+{
+	FAuraGameplayEffectContext* auraContext = static_cast<FAuraGameplayEffectContext*>(ContextHandle.Get());
+	return auraContext->IsCriticalHit();
+}
+
+void UAuraAbilitySystemLibrary::SetIsBlockingHit(FGameplayEffectContextHandle& ContextHandle,const bool bIsBlockingHit)
+{
+	FAuraGameplayEffectContext* auraContext = static_cast<FAuraGameplayEffectContext*>(ContextHandle.Get());
+	auraContext->SetIsBlockingHit(bIsBlockingHit);
+}
+
+void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& ContextHandle,const bool bIsCriticalHit)
+{
+	FAuraGameplayEffectContext* auraContext = static_cast<FAuraGameplayEffectContext*>(ContextHandle.Get());
+	auraContext->SetIsCriticalHit(bIsCriticalHit);
 }

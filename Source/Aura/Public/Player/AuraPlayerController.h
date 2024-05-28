@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class UDamageTextComponent;
 class USplineComponent;
 class UAuraAbilitySystemComponent;
 class UAuraInputConfig;
@@ -27,6 +28,8 @@ public:
 
 	virtual void PlayerTick(float DeltaSeconds) override;
 
+	UFUNCTION(Client, Reliable)
+	void ClientShowDamageText(AActor* DamagedActor, float Damage, bool bIsCriticalDamage, bool bIsBlockingHit);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -38,6 +41,8 @@ private:
 	TObjectPtr<UInputAction> MoveAction;
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	UAuraInputConfig* InputConfig;
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 	
 	UPROPERTY()
 	UAuraAbilitySystemComponent* AuraAbilitySystemComponent;

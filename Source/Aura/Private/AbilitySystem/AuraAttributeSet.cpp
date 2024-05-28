@@ -7,9 +7,11 @@
 #include "Core/AuraGameplayTags.h"
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/AuraCombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/AuraPlayerController.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -95,27 +97,33 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		const float incomingDamage = GetIncomingDamage();
+		const float localIncomingDamage = GetIncomingDamage();
 		SetIncomingDamage(0.f);
 
-		const float newHealth = GetHealth() - incomingDamage;
-		SetHealth(FMath::Clamp(newHealth, 0, GetMaxHealth()));
-		
-		const bool bIsFatal = newHealth <= 0;
-		if (!bIsFatal)
+		if (localIncomingDamage > 0)
 		{
-			FGameplayTagContainer tagContainer;
-			tagContainer.AddTag(FAuraGameplayTags::Get().EffectHitReact);
-			properties.TargetASC->TryActivateAbilitiesByTag(tagContainer);
-		}
-		else
-		{
-			IAuraCombatInterface* combatInterface = Cast<IAuraCombatInterface>(properties.TargetAvatarActor);
-			if (combatInterface)
+			const float newHealth = GetHealth() - localIncomingDamage;
+			SetHealth(FMath::Clamp(newHealth, 0, GetMaxHealth()));
+			const bool bIsFatal = newHealth <= 0;
+			if (!bIsFatal)
 			{
-				combatInterface->Die();
+				FGameplayTagContainer tagContainer;
+				tagContainer.AddTag(FAuraGameplayTags::Get().EffectHitReact);
+				properties.TargetASC->TryActivateAbilitiesByTag(tagContainer);
 			}
-		}
+			else
+			{
+				IAuraCombatInterface* combatInterface = Cast<IAuraCombatInterface>(properties.TargetAvatarActor);
+				if (combatInterface)
+				{
+					combatInterface->Die();
+				}
+			}
+
+			const bool bBlockingHit = UAuraAbilitySystemLibrary::IsBlockingHit(properties.ContextHandle);
+			const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(properties.ContextHandle);
+			ShowFloatingText(properties, localIncomingDamage, bCriticalHit, bBlockingHit);
+		}		
 	}
 }
 
@@ -224,7 +232,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 		}
 		if (EffectProperties.SourceController)
 		{
-			ACharacter* sourceCharacter = Cast<ACharacter>(EffectProperties.SourceController->GetPawn());
+			EffectProperties.SourceCharacter = Cast<ACharacter>(EffectProperties.SourceController->GetPawn());
 		}
 	}
 
@@ -235,5 +243,14 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 		EffectProperties.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
 		EffectProperties.TargetCharacter = Cast<ACharacter>(EffectProperties.TargetAvatarActor);
 		EffectProperties.TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(EffectProperties.TargetAvatarActor);
+	}
+}
+
+void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Properties, const float Damage, bool bIsCriticalDamage, bool bIsBlockingHit) const
+{
+	if (Properties.SourceCharacter != Properties.TargetCharacter)
+	{
+		AAuraPlayerController* pc = Cast<AAuraPlayerController>(Properties.SourceController);
+		pc->ClientShowDamageText(Properties.TargetAvatarActor, Damage, bIsCriticalDamage, bIsBlockingHit);
 	}
 }

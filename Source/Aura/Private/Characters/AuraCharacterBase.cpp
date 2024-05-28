@@ -43,6 +43,7 @@ UAnimMontage* AAuraCharacterBase::GetHitReactAnim_Implementation()
 void AAuraCharacterBase::Die()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	SetLifeSpan(4.f);
 	MulticastHandleDeath();
 }
 
@@ -58,6 +59,8 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Dissolve();
 }
 
 // Called when the game starts or when spawned
@@ -92,5 +95,21 @@ void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Gameplay
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle GameplayEffectSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, EffectContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpecHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void AAuraCharacterBase::Dissolve()
+{
+	if (IsValid(CharacterDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* dynMatIns = UMaterialInstanceDynamic::Create(CharacterDissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, dynMatIns);
+		StartDissolveTimelineForCharacter(dynMatIns);
+	}
+	if (IsValid(WeaponDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* dynMatIns = UMaterialInstanceDynamic::Create(WeaponDissolveMaterialInstance, this);
+		Weapon->SetMaterial(0, dynMatIns);
+		StartDissolveTimelineForWeapon(dynMatIns);
+	}
 }
 

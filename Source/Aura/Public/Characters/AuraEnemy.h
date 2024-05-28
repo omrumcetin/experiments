@@ -33,7 +33,7 @@ public:
 	virtual void UnhighlightActor() override;
 #pragma endregion
 
-	virtual int32 GetPlayerLevel() override { return Level; }
+	virtual int32 GetPlayerLevel() const override { return Level; }
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;

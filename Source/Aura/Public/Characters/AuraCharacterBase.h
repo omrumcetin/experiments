@@ -59,11 +59,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
-	virtual void InitAbilityActorInfo() {}
-	void GiveAbilitiesToCharacter();
-	virtual void InitializeDefaultAttributes() const;
-	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> HitReactAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MaterialInstance")
+	TObjectPtr<UMaterialInstance> CharacterDissolveMaterialInstance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MaterialInstance")
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimelineForCharacter(UMaterialInstanceDynamic* DynamicMaterialInstance);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimelineForWeapon(UMaterialInstanceDynamic* DynamicMaterialInstance);
+
+	virtual void InitAbilityActorInfo() {}
+	virtual void InitializeDefaultAttributes() const;
+	void GiveAbilitiesToCharacter();
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, uint32 Level) const;
+	void Dissolve();
+
+
 };
